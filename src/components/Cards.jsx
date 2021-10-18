@@ -1,51 +1,16 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useFetch } from "../hooks/useFetch";
 import Card from "./Card";
+import Form from "./Form";
+import Loading from "./Loading";
 
 const Cards = () => {
-  const [images, setImages] = useState([]);
-  const [input, setInput] = useState("");
+  const [images, loading, handleSubmit] = useFetch();
 
-  const peticion = useCallback(
-    async (endpoint = "") => {
-      const accessKey = "client_id=kRf39JhQNCnVkpOiHDifN5e4FfNNpSpi5J_GGQXGKr0";
-      let route = `https://api.unsplash.com/photos/?${accessKey}`;
-      if (input !== "") {
-        route = `https://api.unsplash.com/search/photos/?query=${encodeURI(
-          input
-        )}&${accessKey}`;
-      }
-      const res = await fetch(route);
-      const data = await res.json();
-      if (data.results) {
-        setImages(data.results);
-      } else {
-        setImages(data);
-      }
-    },
-    [input]
-  );
-
-  useEffect(() => {
-    peticion();
-  }, [peticion]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const text = e.target[0].value;
-    setInput(text);
-  };
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="inputText" className="w-75">
-          Buscar:
-          <input type="text" name="inputText" className="w-75" />
-        </label>
-        <button type="submit" className="btn btn-info mx-2">
-          <span className="material-icons">search</span>
-        </button>
-      </form>
+    <div className="text-center">
+      <Form handleSubmit={handleSubmit} />
       <hr />
+      {loading && <Loading />}
       <div className="row">
         {images.map((img) => {
           return (
@@ -55,7 +20,7 @@ const Cards = () => {
           );
         })}
       </div>
-    </>
+    </div>
   );
 };
 
